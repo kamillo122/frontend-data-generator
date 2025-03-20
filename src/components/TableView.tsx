@@ -1,21 +1,10 @@
 import React from "react";
+import { flattenObject } from "../utils/utils.ts";
 
 interface TableViewProps {
   data: any[];
   tableName: string;
 }
-
-const flattenObject = (obj: any, prefix = ""): any => {
-  return Object.keys(obj).reduce((acc, key) => {
-    const newKey = prefix ? `${prefix}.${key}` : key;
-    if (typeof obj[key] === "object" && obj[key] !== null) {
-      Object.assign(acc, flattenObject(obj[key], newKey));
-    } else {
-      acc[newKey] = obj[key];
-    }
-    return acc;
-  }, {} as any);
-};
 
 const TableView: React.FC<TableViewProps> = ({ data, tableName }) => {
   if (data.length === 0) return <p className="text-center text-gray-600">No data available for {tableName}.</p>;

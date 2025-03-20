@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchData, clearDatabase, generateData } from "../service/api.ts";
 import TableView from "./TableView.tsx";
+import { flattenObject } from "../utils/utils.ts";
 
 const tables = ["Address", "Client", "Contract", "Employee", "Payment", "Project", "Task", "Technology"];
 
@@ -49,13 +50,7 @@ const Controls = ({ selectedTable, setSelectedTable }) => {
     setGenerationTime(null);
     const startTime = performance.now();
     try {
-      if (generateAll) {
-        for (const table of tables) {
-          await generateData(rowCount, dbType, table.toLowerCase());
-        }
-      } else {
-        await generateData(rowCount, dbType, selectedTable.toLowerCase());
-      }
+      await generateData(rowCount, dbType, selectedTable.toLowerCase(), generateAll);
       fetchTableData();
     } catch (err) {
       console.error(err);
