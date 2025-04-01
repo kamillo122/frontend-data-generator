@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { fetchData, clearDatabase, generateData } from "../service/api.ts";
 import TableView from "./TableView.tsx";
-import { flattenObject } from "../utils/utils.ts";
 
 const tables = ["Address", "Client", "Contract", "Employee", "Payment", "Project", "Task", "Technology"];
+
 
 const Controls = ({ selectedTable, setSelectedTable }) => {
   const [dbType, setDbType] = useState("mysql");
@@ -58,6 +58,27 @@ const Controls = ({ selectedTable, setSelectedTable }) => {
     const endTime = performance.now();
     setGenerationTime(endTime - startTime);
     setGenerating(false);
+  };
+
+  const handleExport = () => {
+    if (data.length === 0) {
+      alert("No data to export");
+      return;
+    }
+  
+    const csvContent = [
+      Object.keys(data[0]).join(","),
+      ...data.map(row => Object.values(row).map(value => `"${value}"`).join(","))
+    ].join("\n");
+  
+    const blob = new Blob([csvContent], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${selectedTable}_export.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
   };
 
   const filteredData = data.filter(row =>
@@ -150,6 +171,12 @@ const Controls = ({ selectedTable, setSelectedTable }) => {
         >
           {generating ? "Generating..." : "Generate Data"}
         </button>
+        <button
+    onClick={handleExport}
+    className="flex-1 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+  >
+    Export Data
+  </button>
       </div>
 
       <TableView data={filteredData} tableName={selectedTable} />
