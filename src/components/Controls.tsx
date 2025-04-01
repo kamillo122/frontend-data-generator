@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { fetchData, clearDatabase, generateData } from "../service/api.ts";
 import TableView from "./TableView.tsx";
+import { flattenObject } from '../utils/utils';
 
 const tables = ["Address", "Client", "Contract", "Employee", "Payment", "Project", "Task", "Technology"];
 
@@ -65,12 +66,10 @@ const Controls = ({ selectedTable, setSelectedTable }) => {
       alert("No data to export");
       return;
     }
-  
     const csvContent = [
-      Object.keys(data[0]).join(","),
-      ...data.map(row => Object.values(row).map(value => `"${value}"`).join(","))
+      Object.keys(flattenObject(data[0])).join(","),
+      ...data.map(row => Object.values(flattenObject(row)).map(value => `"${value}"`).join(","))
     ].join("\n");
-  
     const blob = new Blob([csvContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
